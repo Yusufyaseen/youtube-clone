@@ -1,0 +1,8 @@
+<div fxLayout="row wrap">
+  <h3>Featured Videos</h3>
+</div>
+<div fxLayout="row wrap" fxLayoutGap="4px grid">
+  <div *ngFor="let featuredVideo of featuredVideos" class="card">
+    <app-video-card [video]="featuredVideo"></app-video-card>
+  </div>
+</div>

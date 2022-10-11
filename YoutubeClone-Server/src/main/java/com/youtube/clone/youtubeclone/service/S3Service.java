@@ -33,10 +33,14 @@ public class S3Service implements FileService {
         var metaData = new ObjectMetadata();
         metaData.setContentLength(file.getSize());
         metaData.setContentType(file.getContentType());
-
+        System.out.println("//////");
+        System.out.println(key);
         try {
             amazonS3Client.putObject(BUCKET_NAME, key, file.getInputStream(), metaData);
         } catch (IOException e) {
+            System.out.println("-----------------");
+            System.out.println(e.getMessage());
+            System.out.println("-----------------");
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An error has occured while uploading the file.");
         }
         amazonS3Client.setObjectAcl(BUCKET_NAME, key, CannedAccessControlList.PublicRead);

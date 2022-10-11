@@ -25,6 +25,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String fullName;
+    private String photo;
     @Indexed(unique = true)
     private String emailAddress;
     private Set<String> subscribedToUsers = ConcurrentHashMap.newKeySet();

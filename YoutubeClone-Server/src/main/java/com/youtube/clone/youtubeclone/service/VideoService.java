@@ -1,15 +1,19 @@
 package com.youtube.clone.youtubeclone.service;
 
 import com.youtube.clone.youtubeclone.dto.CommentDto;
+import com.youtube.clone.youtubeclone.dto.SubscriberDto;
 import com.youtube.clone.youtubeclone.dto.UploadVideoResponse;
 import com.youtube.clone.youtubeclone.dto.VideoDto;
 import com.youtube.clone.youtubeclone.model.Comment;
+import com.youtube.clone.youtubeclone.model.User;
 import com.youtube.clone.youtubeclone.model.Video;
 import com.youtube.clone.youtubeclone.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +32,13 @@ public class VideoService {
         String videoUrl = s3Service.uploadFile(file);
         Video video = new Video();
         video.setVideoUrl(videoUrl);
+
+        String pattern = "d MMM YYYY";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String date = simpleDateFormat.format(new Date());
+        video.setDate(date);
+
+        video.setUserId(userService.getCurrentUser().getId());
         Video savedVideo = videoRepository.save(video);
         return new UploadVideoResponse(savedVideo.getId(), savedVideo.getVideoUrl());
     }
@@ -38,16 +49,20 @@ public class VideoService {
         savedVideo.setDescription(videoDto.getDescription());
         savedVideo.setTags(videoDto.getTags());
         savedVideo.setVideoStatus(videoDto.getVideoStatus());
-        savedVideo.setThumbnailUrl(videoDto.getThumbnailUrl());
-        videoRepository.save(savedVideo);
+        Video v= videoRepository.save(savedVideo);
+
         return videoDto;
+    }
+    public List<VideoDto> getVideosOfUser(String userId) {
+        List<Video> videos = videoRepository.findByUserId(userId).orElseThrow(() -> new IllegalArgumentException("No videos here"));
+        return videos.stream().map(this::mapToVideoDto).collect(Collectors.toList());
     }
 
     public String uploadVideoThumbnail(MultipartFile file, String videoId) {
         Video savedVideo = getVideoById(videoId);
         String thumbnailUrl = s3Service.uploadFile(file);
         savedVideo.setThumbnailUrl(thumbnailUrl);
-        videoRepository.save(savedVideo);
+        Video v = videoRepository.save(savedVideo);
         return thumbnailUrl;
     }
 
@@ -59,7 +74,7 @@ public class VideoService {
         Video video = getVideoById(videoId);
         incrementVideoCount(video);
 
-//        userService.addToVideoHistory(videoId);
+        userService.addToVideoHistory(videoId);
 
         return mapToVideoDto(video);
     }
@@ -112,8 +127,10 @@ public class VideoService {
         return videoRepository.findAll().stream().map(this::mapToVideoDto).collect(Collectors.toList());
     }
     private VideoDto mapToVideoDto(Video video){
+        User user = userService.getUserById(video.getUserId());
         VideoDto videoDto = VideoDto.builder().id(video.getId())
                 .title(video.getTitle())
+                .userId(video.getUserId())
                 .description(video.getDescription())
                 .tags(video.getTags())
                 .videoStatus(video.getVideoStatus())
@@ -122,6 +139,9 @@ public class VideoService {
                 .likeCount(video.getLikes().get())
                 .dislikeCount(video.getDisLikes().get())
                 .viewCount(video.getViewCount().get())
+                .date(video.getDate())
+                .authorName(user.getFirstName() + " " + user.getLastName())
+                .authorPhoto(user.getPhoto())
                 .build();
 
         return videoDto;

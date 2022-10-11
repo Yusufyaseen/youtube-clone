@@ -17,11 +17,15 @@ import java.util.Set;
 @NoArgsConstructor
 public class VideoDto {
     private String id;
+    private String userId;
+    private String authorName;
+    private String authorPhoto;
     private String title;
     private String description;
     private Set<String> tags;
     private VideoStatus videoStatus;
     private String thumbnailUrl;
+    private String date;
     private String videoUrl;
     private Integer likeCount;
     private Integer dislikeCount;

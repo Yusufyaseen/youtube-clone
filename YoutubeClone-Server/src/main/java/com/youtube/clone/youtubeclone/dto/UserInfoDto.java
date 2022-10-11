@@ -16,10 +16,10 @@ public class UserInfoDto {
     private String givenName;
     @JsonProperty("family_name")
     private String familyName;
-    @JsonProperty("name")
-    private String name;
+    @JsonProperty("nickname")
+    private String nickname;
     @JsonProperty("picture")
     private String picture;
-    @JsonProperty("email")
+//    @JsonProperty("email")
     private String email;
 }

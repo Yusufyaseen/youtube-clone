@@ -36,6 +36,7 @@ public class UserRegistrationService {
         try {
             HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             String body = httpResponse.body();
+            System.out.println(body);
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             UserInfoDto userInfoDto = objectMapper.readValue(body, UserInfoDto.class);
@@ -47,15 +48,19 @@ public class UserRegistrationService {
             else {
                 User user = User.builder().firstName(userInfoDto.getGivenName())
                         .lastName(userInfoDto.getFamilyName())
-                        .fullName(userInfoDto.getName())
-                        .emailAddress(userInfoDto.getEmail())
+                        .fullName(userInfoDto.getNickname())
+                        .emailAddress(userInfoDto.getNickname()+"@gmail.com")
                         .sub(userInfoDto.getSub())
+                        .photo(userInfoDto.getPicture())
                         .build();
 
                 return userRepository.save(user).getId();
             }
 
         } catch (Exception exception) {
+            System.out.println("-------------------------------");
+            System.out.println(exception.getMessage());
+            System.out.println("-------------------------------");
             throw new RuntimeException("An exception occurs while registering the user.");
         }
     }

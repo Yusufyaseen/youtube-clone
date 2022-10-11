@@ -1,5 +1,7 @@
 package com.youtube.clone.youtubeclone.service;
 
+import com.youtube.clone.youtubeclone.dto.SubscriberDto;
+import com.youtube.clone.youtubeclone.dto.VideoDto;
 import com.youtube.clone.youtubeclone.model.User;
 import com.youtube.clone.youtubeclone.model.Video;
 import com.youtube.clone.youtubeclone.repository.UserRepository;
@@ -8,7 +10,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -59,15 +63,11 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public boolean ifSubscribedToUser(String userId) {
-        return getCurrentUser().getSubscribedToUsers().stream().anyMatch((id) -> userId.equals(id));
-    }
     public void subscribeUser(String userId) {
         User currentUser = getCurrentUser();
         currentUser.addToSubscribedToUsers(userId);
         System.out.println(currentUser.getFullName());
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User is not found.!"));
+        User user = getUserById(userId);
         user.addToSubscribers(currentUser.getId());
 
         userRepository.save(currentUser);
@@ -80,16 +80,34 @@ public class UserService {
         System.out.println(currentUser.getSubscribers());
         currentUser.removeFromSubscribedToUsers(userId);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User is not found.!"));
+        User user = getUserById(userId);
         user.removeFromSubscribers(currentUser.getId());
 
         userRepository.save(currentUser);
         userRepository.save(user);
+    }
+    public User getUserById(String id){
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User is not found.!"));
     }
 
     public Set<String> userHistory() {
         User user = getCurrentUser();
         return user.getViewHistory();
     }
+
+    public List<SubscriberDto> getSubscriptions() {
+        User user = getCurrentUser();
+        return user.getSubscribedToUsers().stream().map(this::mapToSubscriberDto).collect(Collectors.toList());
+    }
+    private SubscriberDto mapToSubscriberDto(String id){
+        User user = getUserById(id);
+        SubscriberDto subscriberDto = SubscriberDto.builder().userId(id)
+                .name(user.getFirstName() + " " + user.getLastName())
+                .photo(user.getPhoto())
+                .build();
+        return subscriberDto;
+    }
+
+
 }
