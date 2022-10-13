@@ -12,5 +12,5 @@
 ### 1- Spring Boot.
 ### 2- MongoDB.
 ### 3- AWS S3 for storage.
-### 4- Auth0 for security.
+### 4- Auth0/oAuth2 for authentication.
 ### 5- Angular.
