@@ -64,8 +64,8 @@ public class UserController {
 
     @GetMapping("/history")
     @ResponseStatus(HttpStatus.OK)
-    public Set<String> getUserHistory(){
-        return userService.userHistory();
+    public Set<VideoDto> getUserHistory(){
+        return videoService.userHistory();
     }
 
 }

@@ -24,9 +24,11 @@
       </div>
       <mat-divider></mat-divider>
       <div fxLayout="row"  class="cont">
-        <div fxLayout="column" fxFlex="50%">
-          <mat-card-title class="channelName">Programming Techie</mat-card-title>
-          <mat-card-subtitle class="subtitles">4.2K Subscribers</mat-card-subtitle>
+        <div fxFlex="8%">
+          <img mat-card-avatar class="photo" [src]="authorPhoto" alt="">
+        </div>
+        <div fxLayout="column" fxFlex="42%">
+          <mat-card-title class="channelName">{{authorName}}</mat-card-title>
         </div>
        <div fxFlex="50%" fxLayoutAlign="end">
         <button *ngIf="showSubscribeButton" class="subscribe-button" mat-raised-button color="warn"

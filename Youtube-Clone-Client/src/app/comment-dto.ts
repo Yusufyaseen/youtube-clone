@@ -1,4 +1,6 @@
 export interface CommentDto {
   text: string,
-  authorId: string
+  authorName: string,
+  authorPhoto: string,
+  date: string
 }

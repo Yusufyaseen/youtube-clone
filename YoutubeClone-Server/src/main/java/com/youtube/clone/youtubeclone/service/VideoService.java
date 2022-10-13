@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,13 +50,23 @@ public class VideoService {
         savedVideo.setDescription(videoDto.getDescription());
         savedVideo.setTags(videoDto.getTags());
         savedVideo.setVideoStatus(videoDto.getVideoStatus());
-        Video v= videoRepository.save(savedVideo);
+        Video v = videoRepository.save(savedVideo);
 
         return videoDto;
     }
+
     public List<VideoDto> getVideosOfUser(String userId) {
         List<Video> videos = videoRepository.findByUserId(userId).orElseThrow(() -> new IllegalArgumentException("No videos here"));
         return videos.stream().map(this::mapToVideoDto).collect(Collectors.toList());
+    }
+
+    public Set<VideoDto> userHistory() {
+        User user = userService.getCurrentUser();
+        Set<VideoDto> videos = user.getViewHistory().stream().map((id) -> {
+            Video video = getVideoById(id);
+            return mapToVideoDto(video);
+        }).collect(Collectors.toSet());
+        return videos;
     }
 
     public String uploadVideoThumbnail(MultipartFile file, String videoId) {
@@ -74,9 +85,11 @@ public class VideoService {
         Video video = getVideoById(videoId);
         incrementVideoCount(video);
 
-        userService.addToVideoHistory(videoId);
+        boolean found = userService.addToVideoHistory(videoId, video.getUserId());
 
-        return mapToVideoDto(video);
+        VideoDto videoDto = mapToVideoDto(video);
+        videoDto.setSubscribed(found);
+        return videoDto;
     }
 
     private void incrementVideoCount(Video video) {
@@ -123,10 +136,12 @@ public class VideoService {
         return mapToVideoDto(video);
 
     }
+
     public List<VideoDto> getAllVideos() {
         return videoRepository.findAll().stream().map(this::mapToVideoDto).collect(Collectors.toList());
     }
-    private VideoDto mapToVideoDto(Video video){
+
+    private VideoDto mapToVideoDto(Video video) {
         User user = userService.getUserById(video.getUserId());
         VideoDto videoDto = VideoDto.builder().id(video.getId())
                 .title(video.getTitle())
@@ -148,9 +163,14 @@ public class VideoService {
     }
 
     public void addComment(String videoId, CommentDto commentDto) {
+        User user = userService.getCurrentUser();
         Video video = getVideoById(videoId);
         Comment comment = new Comment();
-        comment.setAuthorId(commentDto.getAuthorId());
+        String pattern = "d MMM YYYY";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String date = simpleDateFormat.format(new Date());
+        comment.setAuthorId(user.getId());
+        comment.setDate(date);
         comment.setText(commentDto.getText());
         video.addComment(comment);
         videoRepository.save(video);
@@ -159,13 +179,18 @@ public class VideoService {
     public List<CommentDto> getCommentsOfAVideo(String videoId) {
         Video video = getVideoById(videoId);
         List<Comment> commentsList = video.getComments();
-        List<CommentDto> comments = commentsList.stream().map(comment -> mapToCommentDto(comment)).collect(Collectors.toList());
+        List<CommentDto> comments = commentsList.stream().map(comment -> mapToCommentDto(comment)
+        ).collect(Collectors.toList());
         return comments;
     }
-    private CommentDto mapToCommentDto(Comment comment){
+
+    private CommentDto mapToCommentDto(Comment comment) {
+        User user = userService.getUserById(comment.getAuthorId());
         CommentDto commentDto = CommentDto.builder()
-                .authorId(comment.getAuthorId())
+                .authorName(user.getFirstName() + " " + user.getLastName())
+                .authorPhoto(user.getPhoto())
                 .text(comment.getText())
+                .date(comment.getDate())
                 .likeCount(comment.getLikeCount().get())
                 .disLikeCount(comment.getDisLikeCount().get())
                 .build();

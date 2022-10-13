@@ -23,6 +23,8 @@ export class VideoDetailComponent implements OnInit {
   showSubscribeButton: boolean = true;
   showUnSubscribeButton: boolean = false;
   date: string = "";
+  authorName: string = "";
+  authorPhoto: string = "";
 
   constructor(private activatedRoute: ActivatedRoute,
               private videoService: VideoService,
@@ -39,6 +41,13 @@ export class VideoDetailComponent implements OnInit {
       this.viewCount = data.viewCount;
       this.date = data.date;
       this.authorId = data.userId;
+      this.authorName = data.authorName;
+      this.authorPhoto = data.authorPhoto;
+      if(data.subscribed == true){
+        this.showUnSubscribeButton = true;
+        this.showSubscribeButton = false;
+      }
+
     })
   }
 

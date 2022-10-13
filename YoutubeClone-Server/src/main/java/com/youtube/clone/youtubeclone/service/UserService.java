@@ -57,10 +57,12 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void addToVideoHistory(String videoId) {
+    public boolean addToVideoHistory(String videoId, String userId) {
         User user = getCurrentUser();
+        boolean found = user.getSubscribedToUsers().contains(userId);
         user.addToVideoHistory(videoId);
         userRepository.save(user);
+        return found;
     }
 
     public void subscribeUser(String userId) {
@@ -91,10 +93,7 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User is not found.!"));
     }
 
-    public Set<String> userHistory() {
-        User user = getCurrentUser();
-        return user.getViewHistory();
-    }
+
 
     public List<SubscriberDto> getSubscriptions() {
         User user = getCurrentUser();

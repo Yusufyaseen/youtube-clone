@@ -15,25 +15,24 @@ import java.util.UUID;
 
 @Service
 public class S3Service implements FileService {
-    public static final String BUCKET_NAME = "youtubeclone2001";
+    public static final String BUCKET_NAME = "clone2001";
     @Autowired
     private AmazonS3Client amazonS3Client;
 
     @Override
     public String uploadFile(MultipartFile file) {
-        System.out.println("Start");
-        System.out.println(file.getOriginalFilename());
-        System.out.println(file.getName());
-        System.out.println(file.getSize());
-        System.out.println(file.getContentType());
-        System.out.println("End");
+//        System.out.println("Start");
+//        System.out.println(file.getOriginalFilename());
+//        System.out.println(file.getName());
+//        System.out.println(file.getSize());
+//        System.out.println(file.getContentType());
+//        System.out.println("End");
         var fileNameExtension = StringUtils.getFilenameExtension(file.getOriginalFilename());
         var key = UUID.randomUUID().toString() + '.' + fileNameExtension;
 
         var metaData = new ObjectMetadata();
         metaData.setContentLength(file.getSize());
         metaData.setContentType(file.getContentType());
-        System.out.println("//////");
         System.out.println(key);
         try {
             amazonS3Client.putObject(BUCKET_NAME, key, file.getInputStream(), metaData);

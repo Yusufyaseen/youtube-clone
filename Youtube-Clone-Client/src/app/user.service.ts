@@ -27,6 +27,9 @@ export class UserService {
   getVideosOfUser(id: string): Observable<VideoDto[]> {
     return this.httpClient.get<VideoDto[]>("http://localhost:8080/api/user/get-videos-of-user/" + id);
   }
+  getHistoryOfUser(): Observable<VideoDto[]> {
+    return this.httpClient.get<VideoDto[]>("http://localhost:8080/api/user/history");
+  }
 
   registerUser() {
     this.httpClient.get("http://localhost:8080/api/user/register", {responseType: "text"})

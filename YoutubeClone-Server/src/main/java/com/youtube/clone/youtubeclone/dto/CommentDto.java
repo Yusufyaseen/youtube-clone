@@ -10,8 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CommentDto {
-    private String authorId;
+    private String authorName;
+    private String authorPhoto;
     private String text;
+    private String date;
     private Integer likeCount;
     private Integer disLikeCount;
 }

@@ -105,6 +105,7 @@ export class SaveVideoDetailsComponent {
       "date": "",
       "authorName": "",
       "authorPhoto": "",
+      "subscribed": false
     }
     this.videoService.saveVideo(videoMetaData).subscribe(data => {
       this.matSnackBar.open("Video Metadata Updated successfully", "OK");

@@ -13,4 +13,5 @@ export interface VideoDto {
   date: string
   authorName: string;
   authorPhoto: string;
+  subscribed: boolean;
 }

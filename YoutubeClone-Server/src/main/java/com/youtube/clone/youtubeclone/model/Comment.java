@@ -15,6 +15,7 @@ public class Comment {
     private String id;
     private String authorId;
     private String text;
+    private String date;
     private AtomicInteger likeCount = new AtomicInteger(0);;
     private AtomicInteger disLikeCount = new AtomicInteger(0);;
 }

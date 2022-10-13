@@ -24,9 +24,9 @@ const routes: Routes = [
       {
         path: 'history', component: HistoryComponent,
       },
-      {
-        path: 'liked-videos', component: LikedVideosComponent,
-      },
+      // {
+      //   path: 'liked-videos', component: LikedVideosComponent,
+      // },
     ]
   },
 

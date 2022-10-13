@@ -30,4 +30,5 @@ public class VideoDto {
     private Integer likeCount;
     private Integer dislikeCount;
     private Integer viewCount;
+    private boolean subscribed;
 }
